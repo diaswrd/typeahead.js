@@ -1,4 +1,10 @@
 /*!
+ * FORKED VERSION FROM https://github.com/diaswrd/typeahead.js
+ * - Changes:
+ * -- Add support for optional POST requests
+ * -- Add option to stringfy data in POST requests
+ * -- Add time (milliseconds) in request when o.data is specified
+ *
  * typeahead.js 0.9.3
  * https://github.com/twitter/typeahead
  * Copyright 2013 Twitter, Inc. and other contributors; Licensed MIT
@@ -303,12 +309,18 @@
             this.filter = o.filter;
             this.replace = o.replace;
             this.ajaxSettings = {
-                type: "get",
+                type: o.requestType || "GET",
                 cache: o.cache,
                 timeout: o.timeout,
                 dataType: o.dataType || "json",
                 beforeSend: o.beforeSend
             };
+            if (o.data != null) {
+                this.ajaxSettings.data = {
+                    data: o.stringifyData ? JSON.stringify(o.data) : o.data,
+                    time: new Date().valueOf()
+                };
+            }
             this._get = (/^throttle$/i.test(o.rateLimitFn) ? utils.throttle : utils.debounce)(this._get, o.rateLimitWait || 300);
         }
         utils.mixin(Transport.prototype, {

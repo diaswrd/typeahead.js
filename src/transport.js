@@ -27,12 +27,19 @@ var Transport = (function() {
     this.replace = o.replace;
 
     this.ajaxSettings = {
-      type: 'get',
+      type: o.requestType || 'GET',
       cache: o.cache,
       timeout: o.timeout,
       dataType: o.dataType || 'json',
       beforeSend: o.beforeSend
     };
+
+    if (o.data != null) {
+      this.ajaxSettings.data = { 
+        data: o.stringifyData ? JSON.stringify(o.data) : o.data, 
+        time: new Date().valueOf() 
+      }
+    }
 
     this._get = (/^throttle$/i.test(o.rateLimitFn) ?
       utils.throttle : utils.debounce)(this._get, o.rateLimitWait || 300);
